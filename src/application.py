@@ -1,8 +1,10 @@
-from flask import Flask, Response, request
-from datetime import datetime
 import json
-from columbia_student_resource import ColumbiaStudentResource
+from datetime import datetime
+
+from flask import Flask, Response
 from flask_cors import CORS
+
+from teacher_resource import TeacherResource
 
 # Create the Flask application object.
 app = Flask(__name__,
@@ -10,7 +12,12 @@ app = Flask(__name__,
             static_folder='static/class-ui/',
             template_folder='web/templates')
 
-CORS(app)
+CORS(app)  # TODO Can I remove this?
+
+
+@app.get('/')
+def hello():
+    return 'Hello, World!'
 
 
 @app.get("/api/health")
