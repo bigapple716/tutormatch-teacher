@@ -1,45 +1,61 @@
 import json
+import logging
 from datetime import datetime
 
-from flask import Flask, Response
-from flask_cors import CORS
+from flask import Flask, Response, request
 
 from teacher_resource import TeacherResource
 
+logging.basicConfig(level=logging.INFO)
+
 # Create the Flask application object.
-app = Flask(__name__,
-            static_url_path='/',
-            static_folder='static/class-ui/',
-            template_folder='web/templates')
-
-CORS(app)  # TODO Can I remove this?
+app = Flask(__name__)
 
 
-@app.get('/')
-def hello():
-    return 'Hello, World!'
+@app.route('/', methods=["GET"])
+def index():
+    return 'You have reached the index page!'
 
 
-@app.get("/api/health")
+@app.route("/health", methods=["GET"])
 def get_health():
-    t = str(datetime.now())
     msg = {
-        "name": "F22-Starter-Microservice",
+        "name": "Teacher Service",
         "health": "Good",
-        "at time": t
+        "at time": str(datetime.now())
     }
-
-    # TODO Explain status codes, content type, ... ...
     result = Response(json.dumps(msg), status=200, content_type="application/json")
 
     return result
 
 
-@app.route("/api/students/<uni>", methods=["GET"])
-def get_student_by_uni(uni):
-    result = ColumbiaStudentResource.get_by_key(uni)
+@app.route("/teacher/<id>", methods=["GET"])
+def get_teacher_by_id(id):
+    db_result = TeacherResource.get_teachers_by_id(id)
+    if db_result:
+        db_result = db_result[0]
+        result = {'id': db_result[0], 'name': db_result[1], 'price': db_result[2], 'introduction': db_result[3]}
+        rsp = Response(json.dumps(result), status=200, content_type="application.json")
+    else:
+        rsp = Response("NOT FOUND", status=404, content_type="text/plain")
 
-    if result:
+    return rsp
+
+
+@app.route("/teacher", methods=["GET"])
+def get_teacher():
+    if not request.args:
+        # get all teachers
+        logging.info('request.args is empty')
+        db_result = TeacherResource.get_all_teachers()
+    else:
+        db_result = TeacherResource.get_teachers_by_skills_and_price(skills=[request.args['skills']],
+                                                                     price_min=request.args['price_min'],
+                                                                     price_max=request.args['price_max'])
+    if db_result:
+        result = []
+        for r in db_result:
+            result.append({'id': r[0], 'name': r[1], 'price': r[2], 'introduction': r[3]})
         rsp = Response(json.dumps(result), status=200, content_type="application.json")
     else:
         rsp = Response("NOT FOUND", status=404, content_type="text/plain")
