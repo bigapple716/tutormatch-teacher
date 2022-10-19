@@ -49,7 +49,10 @@ def get_teacher():
         logging.info('request.args is empty')
         db_result = TeacherResource.get_all_teachers()
     else:
-        db_result = TeacherResource.get_teachers_by_skills_and_price(skills=[request.args['skills']],
+        # request.args contains duplicate keys of 'skills', e.g., /teacher?skills=Python&skills=Java
+        # we need to convert them to a dict with 1 single 'skills' key and a list of skills
+        arg_dict = dict(request.args.lists())
+        db_result = TeacherResource.get_teachers_by_skills_and_price(skills=arg_dict['skills'],
                                                                      price_min=request.args['price_min'],
                                                                      price_max=request.args['price_max'])
     if db_result:
