@@ -1,4 +1,5 @@
 import pymysql
+import logging
 
 
 class TeacherResource:
@@ -17,14 +18,18 @@ class TeacherResource:
 
     @staticmethod
     def _run_sql(sql):
-        # logging.info(sql)
-        print(sql)
+        logging.info(sql)
         connection = TeacherResource._get_connection()
         cur = connection.cursor()
         cur.execute(sql)
         result = cur.fetchall()
 
         return result
+
+    @staticmethod
+    def get_all_teachers():
+        sql = "SELECT * FROM teacher_schema.teacher_info"
+        return TeacherResource._run_sql(sql)
 
     @staticmethod
     def get_teachers_by_id(id):
@@ -60,5 +65,7 @@ class TeacherResource:
 
 # main function is only for testing
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.INFO)
+
     res = TeacherResource.get_teachers_by_skills(['Python', 'Java'])
     print(res)
