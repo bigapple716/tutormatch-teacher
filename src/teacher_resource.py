@@ -88,7 +88,8 @@ class TeacherResource:
                          GROUP BY teacher_id
                      ) skill_cnt
                          JOIN teacher_schema.teacher_info info ON skill_cnt.teacher_id = info.id
-                WHERE skill_cnt.cnt = {} AND price >= {} AND price <= {}'''.format(tuple(skills), len(skills), price_min, price_max)
+                WHERE skill_cnt.cnt = {} AND price >= {} AND price <= {}'''.format(tuple(skills), len(skills),
+                                                                                   price_min, price_max)
         return TeacherResource._run_sql(sql)
 
     @staticmethod
@@ -99,8 +100,13 @@ class TeacherResource:
         return TeacherResource._run_sql(sql)
 
     @staticmethod
-    def get_skills_by_id(teacher_id):
-        sql = "SELECT skill_name FROM teacher_schema.skills WHERE teacher_id = {}".format(teacher_id)
+    def get_skills_by_ids(teacher_ids):
+        if len(teacher_ids) == 1:
+            sql = "SELECT teacher_id, skill_name FROM teacher_schema.skills WHERE teacher_id = {}".format(
+                teacher_ids[0])
+        else:
+            sql = "SELECT teacher_id, skill_name FROM teacher_schema.skills WHERE teacher_id IN {}".format(
+                tuple(teacher_ids))
         return TeacherResource._run_sql(sql)
 
 
