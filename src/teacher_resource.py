@@ -105,7 +105,7 @@ class TeacherResource:
             sql = '''
                 SELECT teacher_id, skill_name
                 FROM teacher_schema.skills
-                WHERE teacher_id IN (1,2)
+                WHERE teacher_id = {}
                 ORDER BY teacher_id'''.format(teacher_ids[0])
         else:
             sql = '''
