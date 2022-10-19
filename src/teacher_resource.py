@@ -102,11 +102,17 @@ class TeacherResource:
     @staticmethod
     def get_skills_by_ids(teacher_ids):
         if len(teacher_ids) == 1:
-            sql = "SELECT teacher_id, skill_name FROM teacher_schema.skills WHERE teacher_id = {}".format(
-                teacher_ids[0])
+            sql = '''
+                SELECT teacher_id, skill_name
+                FROM teacher_schema.skills
+                WHERE teacher_id IN (1,2)
+                ORDER BY teacher_id'''.format(teacher_ids[0])
         else:
-            sql = "SELECT teacher_id, skill_name FROM teacher_schema.skills WHERE teacher_id IN {}".format(
-                tuple(teacher_ids))
+            sql = '''
+                SELECT teacher_id, skill_name 
+                FROM teacher_schema.skills 
+                WHERE teacher_id IN {}
+                ORDER BY teacher_id'''.format(tuple(teacher_ids))
         return TeacherResource._run_sql(sql)
 
 
@@ -114,5 +120,5 @@ class TeacherResource:
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
-    res = TeacherResource.get_teachers_by_skills_and_price(skills=['Python', 'Java'], price_min=50, price_max=90)
+    res = TeacherResource.get_skills_by_ids([1,2])
     print(res)
