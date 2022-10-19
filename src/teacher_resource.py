@@ -89,6 +89,14 @@ class TeacherResource:
                 WHERE skill_cnt.cnt = {} AND price >= {} AND price <= {}'''.format(tuple(skills), len(skills), price_min, price_max)
         return TeacherResource._run_sql(sql)
 
+    @staticmethod
+    def get_available_time_by_id_and_date(teacher_id, date):
+        sql = """
+            SELECT hour FROM teacher_schema.available_time
+            WHERE teacher_id = {} AND date = '{}' AND occupied = 0""".format(teacher_id, date)
+
+        return TeacherResource._run_sql(sql)
+
 
 # main function is only for testing
 if __name__ == '__main__':
