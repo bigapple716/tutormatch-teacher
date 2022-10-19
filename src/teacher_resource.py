@@ -29,19 +29,21 @@ class TeacherResource:
 
     @staticmethod
     def get_all_teachers():
-        sql = "SELECT * FROM teacher_schema.teacher_info"
+        sql = "SELECT id, name, price, introduction FROM teacher_schema.teacher_info"
         return TeacherResource._run_sql(sql)
 
     @staticmethod
     def get_teachers_by_id(id):
-        sql = "SELECT * FROM teacher_schema.teacher_info WHERE id = {}".format(id)
+        sql = "SELECT id, name, price, introduction FROM teacher_schema.teacher_info WHERE id = {}".format(id)
         return TeacherResource._run_sql(sql)
 
+    # deprecated
     @staticmethod
     def get_teachers_by_name(name):
         sql = "SELECT * FROM teacher_schema.teacher_info WHERE name = '{}'".format(name)
         return TeacherResource._run_sql(sql)
 
+    # deprecated
     @staticmethod
     def get_teachers_by_price_range(price_min, price_max):
         sql = "SELECT * FROM teacher_schema.teacher_info WHERE price >= {} AND price <= {}" \
