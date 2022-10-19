@@ -66,5 +66,19 @@ def get_teacher():
     return rsp
 
 
+@app.route("/teacher/<id>/available_time/<date>", methods=["GET"])
+def get_available_time_by_id_and_date(id, date):
+    db_result = TeacherResource.get_available_time_by_id_and_date(id, date)
+    if db_result:
+        result = {'hour': []}
+        for hour in db_result:
+            result['hour'].append(hour[0])
+        rsp = Response(json.dumps(result), status=200, content_type="application.json")
+    else:
+        rsp = Response("NOT FOUND", status=404, content_type="text/plain")
+
+    return rsp
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5011)
