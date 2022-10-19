@@ -1,5 +1,6 @@
-import pymysql
 import logging
+
+import pymysql
 
 
 class TeacherResource:
@@ -50,16 +51,42 @@ class TeacherResource:
     @staticmethod
     def get_teachers_by_skills(skills):
         if len(skills) == 1:
-            sql = "SELECT teacher_id FROM teacher_schema.skills WHERE skill_name = '{}'".format(skills[0])
+            sql = """
+                SELECT info.id, info.name, info.price, info.introduction
+                FROM teacher_schema.skills JOIN teacher_schema.teacher_info info on info.id = skills.teacher_id
+                WHERE skill_name = '{}' """.format(skills[0])
         else:
             sql = '''
-                SELECT teacher_id 
+                SELECT info.id, info.name, info.price, info.introduction
                 FROM (
-                    SELECT teacher_id, count(*) as cnt 
-                    FROM teacher_schema.skills 
-                    WHERE skill_name IN {} 
-                    GROUP BY teacher_id) skill_cnt 
+                         SELECT teacher_id, count(*) as cnt
+                         FROM teacher_schema.skills
+                         WHERE skill_name IN {}
+                         GROUP BY teacher_id
+                     ) skill_cnt
+                         JOIN teacher_schema.teacher_info info ON skill_cnt.teacher_id = info.id
                 WHERE skill_cnt.cnt = {}'''.format(tuple(skills), len(skills))
+        return TeacherResource._run_sql(sql)
+
+    @staticmethod
+    def get_teachers_by_skills_and_price(skills, price_min, price_max):
+        if len(skills) == 1:
+            sql = """
+                SELECT info.id, info.name, info.price, info.introduction
+                FROM teacher_schema.skills
+                         JOIN teacher_schema.teacher_info info on info.id = skills.teacher_id
+                WHERE skill_name = '{}' AND price >= {} AND price <= {}""".format(skills[0], price_min, price_max)
+        else:
+            sql = '''
+                SELECT info.id, info.name, info.price, info.introduction
+                FROM (
+                         SELECT teacher_id, count(*) as cnt
+                         FROM teacher_schema.skills
+                         WHERE skill_name IN {}
+                         GROUP BY teacher_id
+                     ) skill_cnt
+                         JOIN teacher_schema.teacher_info info ON skill_cnt.teacher_id = info.id
+                WHERE skill_cnt.cnt = {} AND price >= {} AND price <= {}'''.format(tuple(skills), len(skills), price_min, price_max)
         return TeacherResource._run_sql(sql)
 
 
@@ -67,5 +94,5 @@ class TeacherResource:
 if __name__ == '__main__':
     logging.basicConfig(level=logging.INFO)
 
-    res = TeacherResource.get_teachers_by_skills(['Python', 'Java'])
+    res = TeacherResource.get_teachers_by_skills_and_price(skills=['Python', 'Java'], price_min=50, price_max=90)
     print(res)
