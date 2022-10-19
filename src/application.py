@@ -1,5 +1,6 @@
 import json
 import logging
+from collections import defaultdict
 from datetime import datetime
 
 from flask import Flask, Response, request
@@ -32,9 +33,12 @@ def get_health():
 @app.route("/teacher/<id>", methods=["GET"])
 def get_teacher_by_id(id):
     db_result = TeacherResource.get_teachers_by_id(id)
+    skills = TeacherResource.get_skills_by_ids([id])
+    skills = [e[1] for e in skills]  # squeeze the last dimension
     if db_result:
         db_result = db_result[0]
-        result = {'id': db_result[0], 'name': db_result[1], 'price': db_result[2], 'introduction': db_result[3]}
+        result = {'id': db_result[0], 'name': db_result[1], 'price': db_result[2], 'introduction': db_result[3],
+                  'skills': skills}
         rsp = Response(json.dumps(result), status=200, content_type="application.json")
     else:
         rsp = Response("NOT FOUND", status=404, content_type="text/plain")
@@ -56,9 +60,19 @@ def get_teacher():
                                                                      price_min=request.args['price_min'],
                                                                      price_max=request.args['price_max'])
     if db_result:
-        result = []
+        result, teacher_ids = [], []
+
+        # get skills for each teacher
         for r in db_result:
-            result.append({'id': r[0], 'name': r[1], 'price': r[2], 'introduction': r[3]})
+            teacher_ids.append(r[0])
+        # example of id_and_skills: ((1, 'Java'), (1, 'Python'), (1, 'Go'), (2, 'Python'), (2, 'C'))
+        id_and_skills = TeacherResource.get_skills_by_ids(teacher_ids)
+        id_to_skills = defaultdict(list)
+        for t in id_and_skills:
+            id_to_skills[t[0]].append(t[1])
+
+        for r in db_result:
+            result.append({'id': r[0], 'name': r[1], 'price': r[2], 'introduction': r[3], 'skills': id_to_skills[r[0]]})
         rsp = Response(json.dumps(result), status=200, content_type="application.json")
     else:
         rsp = Response("NOT FOUND", status=404, content_type="text/plain")
