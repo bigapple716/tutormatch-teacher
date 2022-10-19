@@ -96,7 +96,11 @@ class TeacherResource:
         sql = """
             SELECT hour FROM teacher_schema.available_time
             WHERE teacher_id = {} AND date = '{}' AND occupied = 0""".format(teacher_id, date)
+        return TeacherResource._run_sql(sql)
 
+    @staticmethod
+    def get_skills_by_id(teacher_id):
+        sql = "SELECT skill_name FROM teacher_schema.skills WHERE teacher_id = {}".format(teacher_id)
         return TeacherResource._run_sql(sql)
 
 
