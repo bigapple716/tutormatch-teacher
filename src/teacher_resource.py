@@ -1,4 +1,5 @@
 import logging
+import os
 
 import pymysql
 
@@ -9,10 +10,17 @@ class TeacherResource:
 
     @staticmethod
     def _get_connection():
+        # connect to my local database
+        # connection = pymysql.connect(
+        #     user='root',
+        #     password='Bluesun777!',
+        #     host='localhost',
+        #     port=3306,
+        # )
         connection = pymysql.connect(
             user='root',
-            password='Bluesun777!',
-            host='localhost',
+            password=os.environ.get("DBPASSWORD"),
+            host=os.environ.get("DBHOST"),
             port=3306,
         )
         return connection
