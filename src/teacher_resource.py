@@ -16,12 +16,14 @@ class TeacherResource:
         #     password='Bluesun777!',
         #     host='localhost',
         #     port=3306,
+        #     autocommit = True
         # )
         connection = pymysql.connect(
             user='root',
             password=os.environ.get("DBPASSWORD"),
             host=os.environ.get("DBHOST"),
             port=3306,
+            autocommit=True
         )
         return connection
 
@@ -34,6 +36,18 @@ class TeacherResource:
         result = cur.fetchall()
 
         return result
+
+    @staticmethod
+    def _run_insert_sql(sql):
+        last_id_sql = 'SELECT LAST_INSERT_ID() FROM teacher_schema.teacher_info LIMIT 1'
+
+        logging.info(sql)
+        connection = TeacherResource._get_connection()
+        cur = connection.cursor()
+        cur.execute(sql)
+        cur.execute(last_id_sql)
+        for row in cur:
+            return row[0]
 
     @staticmethod
     def get_all_teachers():
@@ -99,6 +113,14 @@ class TeacherResource:
                 WHERE skill_cnt.cnt = {} AND price >= {} AND price <= {}'''.format(tuple(skills), len(skills),
                                                                                    price_min, price_max)
         return TeacherResource._run_sql(sql)
+
+    @staticmethod
+    def add_teacher_info(name, price, introduction):
+        sql = """
+            INSERT INTO teacher_schema.teacher_info (name, price, introduction)
+            VALUES ('{}', {}, '{}')""".format(name, price, introduction)
+        id = TeacherResource._run_insert_sql(sql)
+        return id
 
     @staticmethod
     def get_available_time_by_id_and_date(teacher_id, date):
