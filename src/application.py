@@ -80,6 +80,25 @@ def get_teacher():
     return rsp
 
 
+@app.route("/teacher", methods=["POST"])
+def add_new_teacher():
+    # request.args contains duplicate keys
+    # we need to convert them to a dict with 1 single key and a list of values
+    arg_dict = dict(request.args.lists())
+
+    # add a row in teacher_info table
+    new_teacher_id = TeacherResource.add_teacher_info(name=arg_dict['name'], price=arg_dict['price'],
+                                                      introduction=arg_dict['introduction'])
+
+    # add rows in skills table
+    for skill in arg_dict['skills']:
+        TeacherResource.add_skill(new_teacher_id, skill)
+
+    # return the id in response
+    rsp = Response(json.dumps(new_teacher_id), status=200, content_type="application.json")
+    return rsp
+
+
 @app.route("/teacher/<id>/available_time/<date>", methods=["GET"])
 def get_available_time_by_id_and_date(id, date):
     db_result = TeacherResource.get_available_time_by_id_and_date(id, date)

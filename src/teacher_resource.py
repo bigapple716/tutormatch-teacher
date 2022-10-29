@@ -145,6 +145,13 @@ class TeacherResource:
                 ORDER BY teacher_id'''.format(tuple(teacher_ids))
         return TeacherResource._run_sql(sql)
 
+    @staticmethod
+    def add_skill(teacher_id, skill):
+        sql = """
+            INSERT INTO teacher_schema.skills (teacher_id, skill_name)
+            VALUES ({}, '{}')""".format(teacher_id, skill)
+        return TeacherResource._run_sql(sql)
+
 
 # main function is only for testing
 if __name__ == '__main__':
