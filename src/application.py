@@ -111,9 +111,15 @@ def get_available_time_by_id_and_date(id, date):
     return rsp
 
 
-# @app.route("/teacher/<id>/available_time/<date>", methods=["PUT"])
-# def update_available_time_by_id_and_date(id, date, hour, ):
-#     pass
+@app.route("/teacher/<id>/available_time/<date>", methods=["PUT"])
+def update_available_time_by_id_and_date(id, date):
+    hour, occupied = request.args['hour'], request.args['occupied']
+    TeacherResource.update_available_time_by_id_and_date(teacher_id=id, date=date, hour=hour,
+                                                         occupied=occupied)
+
+    # return the id in response
+    rsp = Response("SUCCEED", status=200, content_type="text/plain")
+    return rsp
 
 
 if __name__ == "__main__":

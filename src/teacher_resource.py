@@ -130,6 +130,14 @@ class TeacherResource:
         return TeacherResource._run_sql(sql)
 
     @staticmethod
+    def update_available_time_by_id_and_date(teacher_id, date, hour, occupied):
+        sql = """
+            UPDATE teacher_schema.available_time
+            SET occupied = {}
+            WHERE teacher_id = {} AND date = '{}' AND hour = {}""".format(occupied, teacher_id, date, hour)
+        return TeacherResource._run_sql(sql)
+
+    @staticmethod
     def get_skills_by_ids(teacher_ids):
         if len(teacher_ids) == 1:
             sql = '''
