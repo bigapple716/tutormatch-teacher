@@ -87,8 +87,8 @@ def add_new_teacher():
     arg_dict = dict(request.args.lists())
 
     # add a row in teacher_info table
-    new_teacher_id = TeacherResource.add_teacher_info(name=arg_dict['name'], price=arg_dict['price'],
-                                                      introduction=arg_dict['introduction'])
+    new_teacher_id = TeacherResource.add_teacher_info(name=request.args['name'], price=request.args['price'],
+                                                      introduction=request.args['introduction'])
 
     # add rows in skills table
     for skill in arg_dict['skills']:
@@ -109,6 +109,11 @@ def get_available_time_by_id_and_date(id, date):
     rsp = Response(json.dumps(result), status=200, content_type="application.json")
 
     return rsp
+
+
+# @app.route("/teacher/<id>/available_time/<date>", methods=["PUT"])
+# def update_available_time_by_id_and_date(id, date, hour, ):
+#     pass
 
 
 if __name__ == "__main__":
