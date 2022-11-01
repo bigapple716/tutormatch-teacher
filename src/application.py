@@ -122,5 +122,14 @@ def update_available_time_by_id_and_date(id, date):
     return rsp
 
 
+@app.route("/teacher/<id>/available_time/<date>", methods=["POST"])
+def add_available_time_by_id_and_date(id, date):
+    TeacherResource.add_available_time_by_id_and_date(teacher_id=id, date=date)
+
+    # return the id in response
+    rsp = Response("SUCCEED", status=200, content_type="text/plain")
+    return rsp
+
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5011)
