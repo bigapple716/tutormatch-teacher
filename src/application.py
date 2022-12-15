@@ -111,13 +111,21 @@ def get_available_time_by_id_and_date(id, date):
     return rsp
 
 
-@app.route("/teacher/<id>/available_time/<date>", methods=["PUT"])
-def update_available_time_by_id_and_date(id, date):
-    hour, occupied = request.args['hour'], request.args['occupied']
-    TeacherResource.update_available_time_by_id_and_date(teacher_id=id, date=date, hour=hour,
-                                                         occupied=occupied)
+@app.route("/teacher/occupy_time", methods=["POST"])
+def occupy_time():
+    json_dict = request.get_json()
+    date = str(json_dict["date"])
+    teacher_id = str(json_dict["teacher_id"])
+    hours = json_dict["hours"]
 
-    # return the id in response
+    logging.info('teacher_id: {}, date: {}, hours: {}'.format(teacher_id, date, hours))
+
+    for hour in hours:
+        TeacherResource.update_available_time_by_id_and_date(teacher_id=teacher_id,
+                                                             date=date,
+                                                             hour=hour,
+                                                             occupied=1)
+
     rsp = Response("SUCCEED", status=200, content_type="text/plain")
     return rsp
 
